@@ -618,6 +618,27 @@ async checkAuth() {
         this.socket.emit('player:next', { pin: this.currentPin, playerId: this.playerId });
       }, 5000);
     }
+
+    if (this.isHost) {
+      const container = document.querySelector('.mini-leaderboard');
+      const existingBtn = container.querySelector('.next-btn');
+      if (!existingBtn) {
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-primary btn-lg next-btn';
+        btn.style.marginTop = '20px';
+        btn.style.display = 'block';
+        btn.style.width = '100%';
+        btn.textContent = 'Next Question';
+        btn.addEventListener('click', () => {
+          this.socket.emit('host:next', { pin: this.currentPin }, (response) => {
+            if (!response.success) {
+              this.showError(response.message);
+            }
+          });
+        });
+        container.appendChild(btn);
+      }
+    }
   }
 
   showFinalResults(data) {
