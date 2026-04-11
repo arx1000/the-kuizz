@@ -621,25 +621,29 @@ async checkAuth() {
     }
 
     if (this.isHost) {
-      const container = document.querySelector('.mini-leaderboard');
-      const existingBtn = container.querySelector('.next-btn');
-      if (!existingBtn) {
-        const btn = document.createElement('button');
-        btn.className = 'btn btn-primary btn-lg next-btn';
-        btn.style.marginTop = '20px';
-        btn.style.display = 'block';
-        btn.style.width = '100%';
+  const container = document.querySelector('.mini-leaderboard');
+  const oldBtn = container.querySelector('.next-btn');
+  if (oldBtn) oldBtn.remove();
+  
+  const btn = document.createElement('button');
+  btn.className = 'btn btn-primary btn-lg next-btn';
+  btn.style.marginTop = '20px';
+  btn.style.display = 'block';
+  btn.style.width = '100%';
+  btn.textContent = 'Next Question';
+  btn.addEventListener('click', () => {
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+    this.socket.emit('host:next', { pin: this.currentPin }, (response) => {
+      if (!response.success) {
+        this.showError(response.message);
+        btn.disabled = false;
         btn.textContent = 'Next Question';
-        btn.addEventListener('click', () => {
-          this.socket.emit('host:next', { pin: this.currentPin }, (response) => {
-            if (!response.success) {
-              this.showError(response.message);
-            }
-          });
-        });
-        container.appendChild(btn);
       }
-    }
+    });
+  });
+  container.appendChild(btn);
+}
   }
 
   showFinalResults(data) {
