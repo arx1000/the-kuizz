@@ -92,7 +92,6 @@ class QuizGame {
     });
 
     document.getElementById('login-btn').addEventListener('click', () => this.openModal('login-modal'));
-    document.getElementById('guest-btn').addEventListener('click', () => this.createGuest());
     document.getElementById('host-name').addEventListener('input', (e) => {
       const name = e.target.value.trim();
       document.getElementById('login-btn').disabled = name.length < 2;
