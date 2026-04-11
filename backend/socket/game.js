@@ -28,10 +28,10 @@ const shuffleQuestions = (questions) => {
   });
 };
 
-const calculateScore = (timeRemaining, timeLimit, isCorrect) => {
+const calculateScore = (timeRemaining, timeLimit, isCorrect, maxPoints = 1000) => {
   if (!isCorrect) return 0;
-  const basePoints = 1000;
-  const timeBonus = Math.floor((timeRemaining / timeLimit) * 1000);
+  const basePoints = maxPoints;
+  const timeBonus = Math.floor((timeRemaining / timeLimit) * maxPoints);
   return basePoints + timeBonus;
 };
 
