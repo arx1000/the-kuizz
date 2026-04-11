@@ -278,7 +278,7 @@ const setupSocketHandlers = (io) => {
 
         const currentQuestion = game.quiz.questions[game.currentQuestion];
         const isCorrect = answer === currentQuestion.correctAnswer;
-        const score = calculateScore(timeRemaining, currentQuestion.timeLimit, isCorrect);
+        const score = calculateScore(timeRemaining, currentQuestion.timeLimit, isCorrect, currentQuestion.maxPoints || 1000);
 
         game.answers.set(playerId, {
           answer,
