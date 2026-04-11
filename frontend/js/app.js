@@ -505,6 +505,7 @@ async checkAuth() {
   }
 
   showQuestion(data) {
+    console.log('showQuestion called', data);
     this.showScreen('question-screen');
     this.hasAnswered = false;
     
@@ -592,6 +593,7 @@ async checkAuth() {
   }
 
   showResults(data) {
+    console.log('showResults called', data);
     this.showScreen('results-screen');
 
     document.getElementById('correctness-display').textContent = data.correctAnswer !== undefined ? '' : '';
