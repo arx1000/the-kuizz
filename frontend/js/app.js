@@ -423,11 +423,12 @@ async checkAuth() {
       }
 
       questions.push({
-        questionText,
-        options,
-        correctAnswer: parseInt(correctRadio.value),
-        timeLimit: Math.min(30, Math.max(5, timeLimit))
-      });
+  questionText,
+  options,
+  correctAnswer: parseInt(correctRadio.value),
+  timeLimit: Math.min(30, Math.max(5, timeLimit)),
+  maxPoints: Math.min(5000, Math.max(100, parseInt(editor.querySelector('.max-points').value) || 1000))
+});
     });
 
     if (questions.length === 0) {
