@@ -3,17 +3,14 @@ const http = require('http');
 const { Server } = require('socket.io');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
-
-const authRoutes = require('./routes/auth');
-const quizRoutes = require('./routes/quiz');
-const setupSocketHandlers = require('./socket/game');
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || '*',
+    origin: '*',
     methods: ['GET', 'POST']
   }
 });
@@ -21,8 +18,18 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
+app.use(express.static(path.join(__dirname, '../frontend')));
+
+const authRoutes = require('./routes/auth');
+const quizRoutes = require('./routes/quiz');
+const setupSocketHandlers = require('./socket/game');
+
 app.use('/api/auth', authRoutes);
 app.use('/api/quiz', quizRoutes);
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/index.html'));
+});
 
 setupSocketHandlers(io);
 
