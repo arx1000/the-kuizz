@@ -13,7 +13,7 @@ const generateToken = (userId) => {
 
 router.post('/register', [
   body('username').trim().isLength({ min: 3, max: 30 }).escape(),
-  body('email').isEmail().normalizeEmail(),
+  body('email').trim().isLength({ min: 3, max: 100 }),
   body('password').isLength({ min: 6 })
 ], async (req, res) => {
   try {
