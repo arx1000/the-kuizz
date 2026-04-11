@@ -145,17 +145,11 @@ class QuizGame {
     });
   }
 
-  async checkAuth() {
-    try {
-      this.user = await api.getCurrentUser();
-      if (this.user) {
-        document.getElementById('host-name').value = this.user.username;
-        this.showAuthenticatedState(this.user.username);
-      }
-    } catch (error) {
-      console.log('Not authenticated');
-    }
-  }
+async checkAuth() {
+  api.setToken(null);
+  localStorage.removeItem('quizToken');
+  console.log('Ready to login');
+}
 
   showAuthenticatedState(username) {
     document.querySelector('.auth-section').classList.add('hidden');
