@@ -66,7 +66,8 @@ const setupSocketHandlers = (io) => {
           answers: new Map(),
           scores: new Map(),
           startTime: null,
-          questionStartTime: null
+          questionStartTime: null,
+          questionTimer: null
         };
 
         games.set(pin, game);
@@ -93,6 +94,11 @@ const setupSocketHandlers = (io) => {
           return callback({ success: false, message: 'No players have joined yet' });
         }
 
+        if (game.questionTimer) {
+          clearTimeout(game.questionTimer);
+          game.questionTimer = null;
+        }
+
         game.state = 'question';
         game.currentQuestion = 0;
         game.scores = new Map();
@@ -117,14 +123,11 @@ const setupSocketHandlers = (io) => {
 
         io.to(`game:${pin}`).emit('game:question', questionData);
 
-        if (game.questionTimer) {
-  clearTimeout(game.questionTimer);
-}
-game.questionTimer = setTimeout(() => {
-  if (game.state === 'question' && game.currentQuestion >= 0) {
-    endQuestion(game, io, pin);
-  }
-}, question.timeLimit * 1000);
+        game.questionTimer = setTimeout(() => {
+          if (game.state === 'question' && game.currentQuestion === 0) {
+            endQuestion(game, io, pin);
+          }
+        }, question.timeLimit * 1000);
 
         callback({ success: true });
       } catch (error) {
@@ -140,6 +143,11 @@ game.questionTimer = setTimeout(() => {
 
         if (!game) {
           return callback({ success: false, message: 'Game not found' });
+        }
+
+        if (game.questionTimer) {
+          clearTimeout(game.questionTimer);
+          game.questionTimer = null;
         }
 
         if (game.state === 'question') {
@@ -166,14 +174,11 @@ game.questionTimer = setTimeout(() => {
         game.questionStartTime = Date.now();
         io.to(`game:${pin}`).emit('game:question', questionData);
 
-        if (game.questionTimer) {
-  clearTimeout(game.questionTimer);
-}
-game.questionTimer = setTimeout(() => {
-  if (game.state === 'question' && game.currentQuestion >= 0) {
-    endQuestion(game, io, pin);
-  }
-}, question.timeLimit * 1000);
+        game.questionTimer = setTimeout(() => {
+          if (game.state === 'question' && game.currentQuestion >= 0) {
+            endQuestion(game, io, pin);
+          }
+        }, question.timeLimit * 1000);
 
         callback({ success: true });
       } catch (error) {
@@ -212,6 +217,10 @@ game.questionTimer = setTimeout(() => {
 
         if (!game) {
           return callback({ success: false, message: 'Game not found' });
+        }
+
+        if (game.questionTimer) {
+          clearTimeout(game.questionTimer);
         }
 
         game.state = 'finished';
@@ -322,6 +331,9 @@ game.questionTimer = setTimeout(() => {
       
       games.forEach((game, pin) => {
         if (game.hostId === socket.id) {
+          if (game.questionTimer) {
+            clearTimeout(game.questionTimer);
+          }
           io.to(`game:${pin}`).emit('game:hostLeft');
           games.delete(pin);
         } else {
@@ -336,6 +348,11 @@ game.questionTimer = setTimeout(() => {
     });
 
     function endQuestion(game, io, pin) {
+      if (game.questionTimer) {
+        clearTimeout(game.questionTimer);
+        game.questionTimer = null;
+      }
+      
       if (game.state !== 'question') return;
       
       game.state = 'results';
@@ -361,6 +378,11 @@ game.questionTimer = setTimeout(() => {
     }
 
     function showFinalResults(game, io, pin) {
+      if (game.questionTimer) {
+        clearTimeout(game.questionTimer);
+        game.questionTimer = null;
+      }
+
       const podium = Array.from(game.players.values())
         .map(p => ({
           playerId: p.id,
