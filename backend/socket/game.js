@@ -137,55 +137,59 @@ const setupSocketHandlers = (io) => {
     });
 
     socket.on('host:next', (data, callback) => {
-      try {
-        const { pin } = data;
-        const game = games.get(pin);
+  try {
+    const { pin } = data;
+    const game = games.get(pin);
 
-        if (!game) {
-          return callback({ success: false, message: 'Game not found' });
-        }
+    if (!game) {
+      return callback({ success: false, message: 'Game not found' });
+    }
 
-        if (game.questionTimer) {
-          clearTimeout(game.questionTimer);
-          game.questionTimer = null;
-        }
+    if (game.questionTimer) {
+      clearTimeout(game.questionTimer);
+      game.questionTimer = null;
+    }
 
-        if (game.state === 'question') {
-          endQuestion(game, io, pin);
-        }
+    if (game.state === 'question') {
+      endQuestion(game, io, pin);
+    }
 
-        game.currentQuestion++;
+    game.currentQuestion++;
 
-        if (game.currentQuestion >= game.quiz.questions.length) {
-          game.state = 'finished';
-          showFinalResults(game, io, pin);
-          return callback({ success: true, finished: true });
-        }
+    if (game.currentQuestion >= game.quiz.questions.length) {
+      game.state = 'finished';
+      showFinalResults(game, io, pin);
+      return callback({ success: true, finished: true });
+    }
 
-        const question = game.quiz.questions[game.currentQuestion];
-        const questionData = {
-          questionIndex: game.currentQuestion,
-          totalQuestions: game.quiz.questions.length,
-          question: question.questionText,
-          options: question.options,
-          timeLimit: question.timeLimit
-        };
+    const capturedQuestionIndex = game.currentQuestion;
+    const question = game.quiz.questions[game.currentQuestion];
+    const questionData = {
+      questionIndex: game.currentQuestion,
+      totalQuestions: game.quiz.questions.length,
+      question: question.questionText,
+      options: question.options,
+      timeLimit: question.timeLimit
+    };
 
-        game.questionStartTime = Date.now();
-        io.to(`game:${pin}`).emit('game:question', questionData);
+    game.state = 'question';
+    game.answers = new Map();
+    game.questionStartTime = Date.now();
 
-        game.questionTimer = setTimeout(() => {
-          if (game.state === 'question' && game.currentQuestion >= 0) {
-            endQuestion(game, io, pin);
-          }
-        }, question.timeLimit * 1000);
+    io.to(`game:${pin}`).emit('game:question', questionData);
 
-        callback({ success: true });
-      } catch (error) {
-        console.error('Next question error:', error);
-        callback({ success: false, message: 'Failed to proceed' });
+    game.questionTimer = setTimeout(() => {
+      if (game.state === 'question' && game.currentQuestion === capturedQuestionIndex) {
+        endQuestion(game, io, pin);
       }
-    });
+    }, question.timeLimit * 1000);
+
+    callback({ success: true });
+  } catch (error) {
+    console.error('Next question error:', error);
+    callback({ success: false, message: 'Failed to proceed' });
+  }
+});
 
     socket.on('host:kick', (data, callback) => {
       try {
