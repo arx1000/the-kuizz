@@ -8,6 +8,8 @@ RUN npm install
 
 COPY ./backend .
 
+COPY ./frontend ./frontend
+
 ENV NODE_ENV=production
 
 EXPOSE 3001
