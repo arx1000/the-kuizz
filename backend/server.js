@@ -18,7 +18,7 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
-app.use(express.static(path.join(__dirname, '../frontend')));
+app.use(express.static(path.join(__dirname, 'frontend')));
 
 const authRoutes = require('./routes/auth');
 const quizRoutes = require('./routes/quiz');
@@ -28,7 +28,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/quiz', quizRoutes);
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/index.html'));
+  res.sendFile(path.join(__dirname, 'frontend/index.html'));
 });
 
 setupSocketHandlers(io);
