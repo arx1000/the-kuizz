@@ -363,6 +363,8 @@ async checkAuth() {
         <label>Time Limit:</label>
         <input type="number" class="time-limit" min="5" max="30" value="${question?.timeLimit || 10}">
         <span>seconds</span>
+        <label style="margin-left: 20px;">Max Points:</label>
+        <input type="number" class="max-points" min="100" max="5000" step="100" value="${question?.maxPoints || 1000}">
       </div>
       <button class="btn btn-danger delete-question">Delete</button>
     `;
