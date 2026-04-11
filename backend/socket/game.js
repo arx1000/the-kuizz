@@ -325,6 +325,14 @@ const setupSocketHandlers = (io) => {
         callback({ success: false, message: 'Failed to submit answer' });
       }
     });
+    socket.on('player:next', (data, callback) => {
+  try {
+    const { pin, playerId } = data;
+    callback({ success: true });
+  } catch (error) {
+    console.error('Player next error:', error);
+  }
+});
 
     socket.on('disconnect', () => {
       console.log(`Client disconnected: ${socket.id}`);
