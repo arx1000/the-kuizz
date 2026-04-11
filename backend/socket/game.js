@@ -117,11 +117,14 @@ const setupSocketHandlers = (io) => {
 
         io.to(`game:${pin}`).emit('game:question', questionData);
 
-        setTimeout(() => {
-          if (game.state === 'question' && game.currentQuestion === 0) {
-            endQuestion(game, io, pin);
-          }
-        }, question.timeLimit * 1000);
+        if (game.questionTimer) {
+  clearTimeout(game.questionTimer);
+}
+game.questionTimer = setTimeout(() => {
+  if (game.state === 'question' && game.currentQuestion >= 0) {
+    endQuestion(game, io, pin);
+  }
+}, question.timeLimit * 1000);
 
         callback({ success: true });
       } catch (error) {
@@ -163,11 +166,14 @@ const setupSocketHandlers = (io) => {
         game.questionStartTime = Date.now();
         io.to(`game:${pin}`).emit('game:question', questionData);
 
-        setTimeout(() => {
-          if (game.state === 'question' && game.currentQuestion >= 0) {
-            endQuestion(game, io, pin);
-          }
-        }, question.timeLimit * 1000);
+        if (game.questionTimer) {
+  clearTimeout(game.questionTimer);
+}
+game.questionTimer = setTimeout(() => {
+  if (game.state === 'question' && game.currentQuestion >= 0) {
+    endQuestion(game, io, pin);
+  }
+}, question.timeLimit * 1000);
 
         callback({ success: true });
       } catch (error) {
